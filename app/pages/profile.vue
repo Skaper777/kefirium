@@ -6,7 +6,6 @@
       v-model="form.name"
       class="border p-2 w-full mb-1"
       placeholder="Имя"
-      @input="validate"
     />
     <p class="text-red-500">{{ errors.name }}</p>
 
@@ -14,7 +13,6 @@
       v-model="form.email"
       class="border p-2 w-full mb-1"
       placeholder="Email"
-      @input="validate"
     />
     <p class="text-red-500">{{ errors.email }}</p>
 
@@ -23,54 +21,37 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { onMounted, watch } from "vue";
 
-const form = reactive({
-  name: "",
-  email: "",
-});
+const STORAGE_KEY = "profile-form";
 
-const errors = reactive({
-  name: "",
-  email: "",
-});
-
-const { data } = await useFetch("/api/profile");
-if (data.value) {
-  form.name = data.value.name;
-  form.email = data.value.email;
-}
-
-function validate() {
-  let valid = true;
-
-  if (!form.name) {
-    errors.name = "Имя обязательно";
-    valid = false;
-  } else if (form.name.length < 3) {
-    errors.name = "Минимум 3 символа";
-    valid = false;
-  } else {
-    errors.name = "";
+onMounted(async () => {
+  // пробуем localStorage
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    Object.assign(form, JSON.parse(saved));
+    return;
   }
 
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!form.email) {
-    errors.email = "Email обязателен";
-    valid = false;
-  } else if (!re.test(form.email)) {
-    errors.email = "Некорректный email";
-    valid = false;
-  } else {
-    errors.email = "";
+  // если нет — грузим с API
+  const { data } = await useFetch("/api/profile");
+  if (data.value) {
+    Object.assign(form, data.value);
   }
+});
 
-  return valid;
-}
+watch(
+  form,
+  () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
+  },
+  { deep: true }
+);
 
 function onSubmit() {
-  if (validate()) {
-    alert("Сохранено: " + JSON.stringify(form));
-  }
+  if (!validate()) return;
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
+  alert("Сохранено: " + JSON.stringify(form));
 }
 </script>
