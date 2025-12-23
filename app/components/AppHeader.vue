@@ -14,10 +14,10 @@
           Корзина
           <ClientOnly fallback-tag="span">
             <span
-              v-if="cart.items.length"
+              v-if="cart.count"
               class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full"
             >
-              {{ cart.items.length }}
+              {{ cart.count }}
             </span>
           </ClientOnly>
         </NuxtLink>

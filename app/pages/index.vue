@@ -23,16 +23,11 @@
 
     <!-- Товары -->
     <div class="grid grid-cols-3 gap-4">
-      <NuxtLink
+      <ProductCard
         v-for="product in products.paginated"
         :key="product.id"
-        :to="`/products/${product.id}`"
-        class="border p-4 bg-white"
-      >
-        <h2>{{ product.title }}</h2>
-        <p>{{ product.price }} $</p>
-        <p class="text-sm text-gray-500">{{ product.category }}</p>
-      </NuxtLink>
+        :product="product"
+      />
     </div>
 
     <!-- Пагинация -->
