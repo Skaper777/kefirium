@@ -1,12 +1,12 @@
 import { defineStore } from "pinia";
-import type { Product } from "~/types";
+import type { Product, SortType } from "~/types";
 
 export const useProductsStore = defineStore("products", {
   state: () => ({
     products: [] as Product[],
     search: "",
     category: "" as string | null,
-    sort: "price" as "price" | "title",
+    sort: "name-asc" as SortType,
     page: 1,
     perPage: 9,
   }),
@@ -19,11 +19,20 @@ export const useProductsStore = defineStore("products", {
         res = res.filter((p) =>
           p.title.toLowerCase().includes(this.search.toLowerCase())
         );
-      res = [...res].sort((a, b) =>
-        this.sort === "price"
-          ? a.price - b.price
-          : a.title.localeCompare(b.title)
-      );
+      res = [...res].sort((a, b) => {
+        {
+          switch (this.sort) {
+            case "name-asc":
+              return a.sortIndex - b.sortIndex;
+            case "price-asc":
+              return a.price - b.price;
+            case "price-desc":
+              return b.price - a.price;
+            default:
+              return 0;
+          }
+        }
+      });
       return res;
     },
 
@@ -46,8 +55,9 @@ export const useProductsStore = defineStore("products", {
       this.category = cat;
       this.page = 1;
     },
-    setSort(sort: "price" | "title") {
-      this.sort = sort;
+    setSort(value: SortType) {
+      this.sort = value;
+      this.page = 1;
     },
     setPage(page: number) {
       this.page = page;

@@ -16,8 +16,9 @@
         </option>
       </select>
       <select v-model="products.sort" class="border p-2">
-        <option value="price">По цене</option>
-        <option value="title">По названию</option>
+        <option value="name-asc">По названию</option>
+        <option value="price-asc">По цене ↑</option>
+        <option value="price-desc">По цене ↓</option>
       </select>
     </div>
 

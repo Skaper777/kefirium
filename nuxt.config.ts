@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   css: ["~/assets/css/tailwind.css"],
   routeRules: {
     "/products/**": {
-      swr: 3600,
+      swr: true,
     },
     "/cart": {
       prerender: true,
